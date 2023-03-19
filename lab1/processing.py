@@ -1,5 +1,6 @@
 import io
 import re 
+import math
 
 def read_stop_words():
     stop_words = []
@@ -39,8 +40,44 @@ def frequency(words: list) -> dict:
 def sort_by_frequency(freq: dict):
     return [(word, count) for [word, count] in sorted(freq.items(), key=lambda x: x[1], reverse=True)]
 
-def write_to_word_cloud(freq: list):
-    with open("data/word_cloud.csv", "w") as f:
+def sort_by_freq_list(freq: list):
+    return [(word, count) for (word, count) in sorted(freq, key=lambda x: x[1], reverse=True)]
+
+
+def poem_to_list_of_words(name: str):
+    poem = read_poem(name)
+    poem = clean_poem(poem)
+    poem = poem_to_words(poem)
+    poem = remove_stop_words(poem)
+    poem = frequency(poem)
+    return sort_by_frequency(poem)
+
+def write_to_word_cloud(freq: list, title: str):
+    with open("data/" + title + ".csv", "w") as f:
         for i in range(0, 100):
             (word, count) = freq[i]
             f.write(str(count) + ";\"" + word + "\";\"\";\"\"\n")
+
+def list_contains(list: list, word: str):
+    for (w, _) in list:
+        if w == word:
+            return True
+    return False
+
+def tf_idf_of_poems(names: list):
+    D = {}
+    for name in names:
+        D[name] = poem_to_list_of_words(name)
+    for name, d in D.items():
+        all_words_num = sum([count for (_, count) in d])
+        tf_idfs = []
+        for (word, count) in d:
+            tf = count / all_words_num
+            idf = math.log(len(D) / sum([1 for _, d in D.items() if list_contains(d, word)]))
+            tf_idf = tf * idf
+            tf_idf = int(1_000_000_000 * tf_idf)
+            tf_idfs.append((word, tf_idf))
+        tf_idfs = sort_by_freq_list(tf_idfs)
+        write_to_word_cloud(tf_idfs, name + "_tf_idf")
+        
+
