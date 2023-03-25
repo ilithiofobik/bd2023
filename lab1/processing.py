@@ -79,5 +79,8 @@ def tf_idf_of_poems(names: list):
             tf_idfs.append((word, tf_idf))
         tf_idfs = sort_by_freq_list(tf_idfs)
         write_to_word_cloud(tf_idfs, name + "_tf_idf")
+
+
+
         
 
