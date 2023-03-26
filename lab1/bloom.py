@@ -1,12 +1,13 @@
 import mmh3
 import numpy as np
+import bitarray
 from plots import bloom_plot
 
 class BloomFilter:
-    array = np.zeros(0, int)
+    array = bitarray.bitarray(0)
 
     def __init__(self, n):
-        self.array = np.zeros(n, int)
+        self.array = bitarray.bitarray(n)
 
     def onAdd(self, x):
         for i in range(1, 9):
