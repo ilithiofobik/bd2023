@@ -43,12 +43,17 @@ def sort_by_frequency(freq: dict):
 def sort_by_freq_list(freq: list):
     return [(word, count) for (word, count) in sorted(freq, key=lambda x: x[1], reverse=True)]
 
+def text_to_list_of_words(text: str):
+    poem = clean_poem(text)
+    poem = poem_to_words(poem)
+    return remove_stop_words(poem)
 
 def poem_to_list_of_words(name: str):
     poem = read_poem(name)
-    poem = clean_poem(poem)
-    poem = poem_to_words(poem)
-    poem = remove_stop_words(poem)
+    return text_to_list_of_words(poem)
+
+def poem_to_list_of_tuples(name: str):
+    poem = poem_to_list_of_words(name)
     poem = frequency(poem)
     return sort_by_frequency(poem)
 
@@ -67,7 +72,7 @@ def list_contains(list: list, word: str):
 def tf_idf_of_poems(names: list):
     D = {}
     for name in names:
-        D[name] = poem_to_list_of_words(name)
+        D[name] = poem_to_list_of_tuples(name)
     for name, d in D.items():
         all_words_num = sum([count for (_, count) in d])
         tf_idfs = []
