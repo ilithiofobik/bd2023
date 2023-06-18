@@ -47,8 +47,13 @@ class SingleWindow:
             (partial_idx, _) = self.Partial.readData()
             return partial_idx - 1
         else:
-            (active_idx, _) = self.Active.readData()
-            return (self.WindowSize + active_idx - 1 - self.Partial.Seen) % self.WindowSize
+            (active_idx, _)  = self.Active.readData()
+            (partial_idx, _) = self.Partial.readData()
+
+            if active_idx <= self.Partial.Seen:
+                return (partial_idx - 1) + (self.WindowSize - self.Partial.Seen)
+            else:
+                return (active_idx - 1) - self.Partial.Seen
 
 def histogram_test():
     window_size = 5
@@ -71,13 +76,14 @@ def histogram_test():
 def chi_square_test():
     window_size  = 5
     stream_len   = 10000 
-    frequencies  = [0] * 5
+    frequencies  = [0] * window_size
 
     window = SingleWindow(window_size)
     for i in range(stream_len):
         window.onGet(i)
         frequencies[window.readIdx()] += 1
 
+    print(frequencies)
     (chisq, p) = scipy.stats.chisquare(frequencies)
     print(f"Chi-square statistic: {chisq}, p-value: {p}")
 
