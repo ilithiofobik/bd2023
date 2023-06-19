@@ -83,7 +83,6 @@ def chi_square_test():
         window.onGet(i)
         frequencies[window.readIdx()] += 1
 
-    print(frequencies)
     (chisq, p) = scipy.stats.chisquare(frequencies)
     print(f"Chi-square statistic: {chisq}, p-value: {p}")
 
